@@ -40,7 +40,7 @@ Solution here uses [Terraform](https://www.terraform.io/) to provision cloud res
 | Solution | Description | Related Cloud Services | Video Tutorial | Solution Page on Alibaba Cloud |
 | :------: | :---------: | :--------------------: | :------------: | :----------------------------: |
 |  | Quick start with how to create a PolarDB MySQL instance. | PolarDB MySQL | |  |
-|  | Partition Table Feature 1:  List Default Hash partitioning| PolarDB MySQL, Partition Table | |  |
+| [Partition feature 1 : List Default Hash](https://github.com/lixj1103/database/blob/patch-1/Polardb-m-partition-list_default_hash.md) | Partition Table Feature 1:  List Default Hash partitioning| PolarDB MySQL, Partition Table | |  |
 |  | Partition Table Feature 2:  Range Interval partitioning | PolarDB MySQL, Partition Table | |  |
 |  | Partition Table Feature 3:  Partial Indexes for Partitioned Tables| PolarDB MySQL, Partition Table | |  |
 
