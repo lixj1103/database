@@ -35,6 +35,16 @@ Solution here uses [Terraform](https://www.terraform.io/) to provision cloud res
 | [Setup RDS for PostgreSQL LDAP Authentication with Microsoft AD (Active Directory) Deployed on ECS](https://github.com/alibabacloud-howto/terraform-templates/tree/master/terraform-alicloud-db-samples/rds-postgresql-ecs-microsoft-ad) | Setup RDS for PostgreSQL LDAP Authentication with Microsoft AD (Active Directory) Deployed on ECS. The ECS server and RDS PostgreSQL is provisioned automatically using Terraform script. | EIP, ECS, RDS PostgreSQL | [:clapper:](https://www.youtube.com/watch?v=IFofbnd2u_4) | |
 | [Quick Path to Build BI Dashboard with Cube, React and RDS PostgreSQL](https://github.com/alibabacloud-howto/opensource_with_apsaradb/tree/main/cubejs/postgresql) | Quick path to build BI dashboard with Cube (Cube.JS), React and RDS PostgreSQL. Cube server and React app are deployed on ECS. The ECS server and RDS PostgreSQL is provisioned automatically using Terraform script. | EIP, ECS, RDS PostgreSQL | [:clapper:](https://youtu.be/Rui8ko4TdS8) | |
 
+# Database centric cloud solution hands-on on PolarDB MySQL
+
+| Solution | Description | Related Cloud Services | Video Tutorial | Solution Page on Alibaba Cloud |
+| :------: | :---------: | :--------------------: | :------------: | :----------------------------: |
+|  | Quick start with how to create a PolarDB MySQL instance. | PolarDB MySQL | |  |
+|  | Partition Table Feature 1:  List Default Hash partitioning| PolarDB MySQL, Partition Table | |  |
+|  | Partition Table Feature 2:  Range Interval partitioning | PolarDB MySQL, Partition Table | |  |
+|  | Partition Table Feature 3:  Partial Indexes for Partitioned Tables| PolarDB MySQL, Partition Table | |  |
+
+
 
 # Database solution guide on Alibaba Cloud
 
