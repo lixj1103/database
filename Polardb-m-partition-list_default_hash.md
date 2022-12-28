@@ -36,6 +36,7 @@ CREATE TABLE cust_orders
 );
 ```
 
+### LIST partition solution for this kind of scenarios has problems
 
 There are too many values in partition p_others,  it is not convenient to write the create table sql, and the performence of query like the following will try to find the 'cust_xx' throught amount of values to make sure it is in partition p_others in the processing of the sql execution.
 
@@ -48,15 +49,17 @@ Also,  the following insert sql  also need to make sure 'cust_new' is one member
 insert into cust_orders values ( 'cust_new',  '20221228', 232342, 'context' ); 
 ```
 
+And, sometimes the list values cannot be all enumerated, so the partitions cannot be defined.
 
-The new partition type List Default Hash is a new feature of innovation on PolarDB which can solve this kind of problem perfectly. 
+
 
 ---
 ### The solution with List Default Hash
 
+The new partition type List Default Hash is a new feature of innovation on PolarDB which can solve this kind of problem perfectly.
 ![](https://ata2-img.oss-cn-zhangjiakou.aliyuncs.com/neweditor/5031bbe3-fefc-4ecf-a86b-ad509f0bb2fd.png)
 
-
+For List Default Hash partition type, the front partitions are the normal LIST partitions. Data not in the LIST partition is placed in the DEFAULT partition. If the DEFAULT partition is too large, it can be divided into multiple DEFAULT partitions according to HASH rules
 
 
 ---
