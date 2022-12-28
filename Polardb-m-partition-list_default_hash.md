@@ -63,8 +63,17 @@ For List Default Hash partition type, the front partitions are the normal LIST p
 
 
 ---
-#### Step 1: 
-create the table  cust_orders
+The steps is based on that we have an PolarDB MySQL instance, and we connected a session to the instance.
+
+
+#### Step 1: create the table cust_orders
+
+create database test
+```
+create database test;
+use test
+```
+create the table cust_orders with List Default Hash partitions.
 ```
 CREATE TABLE cust_orders
 (
@@ -82,8 +91,8 @@ CREATE TABLE cust_orders
 );
 ```
 
-#### Step 2: 
-insert some values into table cust_orders
+#### Step 2: insert some values into table cust_orders
+
 ```
 insert into cust_orders  values ( 'cust_new',  '20221228', 232342, 'context' ); 
 insert into cust_orders  values ( 'cust_new',  '20221228', 232342, 'context' );
@@ -93,8 +102,8 @@ insert into cust_orders  values ( 'cust_new3',  '20221228', 232342, 'context' );
 insert into cust_orders  values ( 'cust_n3',  '20221228', 232342, 'context' );
 ```
 
-#### Step 3:
-split partitions from default partitions
+#### Step 3: split partitions from default partitions
+
 When the records of  'cust_new'  increasing fast, and its records is so many that it can be an independent partition.  
 With REORGANIZE PARTITION, you can separate some values from the DEFAULT partition and add new LIST partition for them:
 
@@ -108,7 +117,9 @@ mysql> explain select * from cust_orders where customer_id='cust_new';
 +----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------------+
 1 row in set, 1 warning (0.00 sec)
 ```
-customer_id  'cust_new' is in partition p_others2;
+Now customer_id  'cust_new' is in partition p_others2;
+
+Execute the REORGANIZE PARTITION SQL to separate the value 'cust_new' from the DEFAULT partition and add new LIST partition p5 for it.
 
 ```
  ALTER TABLE cust_orders 
@@ -117,6 +128,8 @@ INTO (
    PARTITION p5 VALUES IN ('cust_new'),
    PARTITION p_others DEFAULT PARTITIONS 2);
 ```
+
+Show create table to see the table structure descriptions, we can see it has partition p5.
 ```
 mysql> show create table cust_orders;
 | Table       | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
@@ -133,15 +146,11 @@ mysql> show create table cust_orders;
  PARTITION p4 VALUES IN ('VIP_CUST_4') ENGINE = InnoDB,
  PARTITION p5 VALUES IN ('cust_new') ENGINE = InnoDB,
  PARTITION p_others DEFAULT PARTITIONS 2 ENGINE = InnoDB) */ |
+```
 
-mysql> explain select * from cust_orders partition(p5);
-+----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------+
-| id | select_type | table       | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra |
-+----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------+
-|  1 | SIMPLE      | cust_orders | p5         | ALL  | NULL          | NULL | NULL    | NULL |    1 |   100.00 | NULL  |
-+----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------+
-1 row in set, 1 warning (0.00 sec)
+Check whether the record with the customer_id 'cust_new' is in partition p5, and not in the default partitions.
 
+```
 mysql> select * from cust_orders partition(p5);
 +-------------+----------+----------+---------------+
 | customer_id | year     | order_id | order_content |
@@ -166,8 +175,8 @@ mysql> select * from cust_orders partition(p_others1);
 Empty set (0.00 sec)
 ```
 
-#### Step 4: 
-Use REORGANIZE PARTITION to merge a LIST partition into the DEFAULT partitions:
+#### Step 4: Use REORGANIZE PARTITION to merge a LIST partition into the DEFAULT partitions:
+
 ```
 mysql> explain select * from cust_orders where customer_id='cust_new';
 +----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------------+
@@ -177,8 +186,6 @@ mysql> explain select * from cust_orders where customer_id='cust_new';
 +----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------------+
 1 row in set, 1 warning (0.00 sec)
 
-
-mysql>
 mysql> select * from cust_orders where customer_id='cust_new';
 +-------------+----------+----------+---------------+
 | customer_id | year     | order_id | order_content |
@@ -187,6 +194,7 @@ mysql> select * from cust_orders where customer_id='cust_new';
 +-------------+----------+----------+---------------+
 ```
 
+Execute the REORGANIZE PARTITION SQL to merge the LIST partition p5 into the DEFAULT partitions.
 ```
 ALTER TABLE cust_orders
 REORGANIZE PARTITION
@@ -195,6 +203,7 @@ INTO (
  PARTITION p_others DEFAULT PARTITIONS 2);
 ```
 
+Check whether the record with the customer_id 'cust_new' is in the default partitions, and not in partition p5.
 ```
 mysql> select * from cust_orders where customer_id='cust_new';
 +-------------+----------+----------+---------------+
@@ -204,7 +213,6 @@ mysql> select * from cust_orders where customer_id='cust_new';
 +-------------+----------+----------+---------------+
 1 row in set (0.00 sec)
 
-mysql>
 mysql> explain select * from cust_orders where customer_id='cust_new';
 +----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------------+
 | id | select_type | table       | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
@@ -215,8 +223,7 @@ mysql> explain select * from cust_orders where customer_id='cust_new';
 ```
 
 
-#### Step 5: 
-Use the REORGANIZE PARTITION operation to change the number of DEFAULT partitions:
+#### Step 5: Use the REORGANIZE PARTITION operation to change the number of DEFAULT partitions:
 
 ```
 mysql> explain select * from cust_orders;
@@ -227,8 +234,9 @@ mysql> explain select * from cust_orders;
 +----+-------------+-------------+---------------------------------+------+---------------+------+---------+------+------+----------+-------+
 1 row in set, 1 warning (0.00 sec)
 ```
-table cust_orders has 2 default partitions: p_others0,p_others1
+Now table cust_orders has 2 default partitions: p_others0,p_others1
 
+Execute the REORGANIZE PARTITION SQL to change the number of DEFAULT partitions to 4.
 ```
 ALTER TABLE  cust_orders
 REORGANIZE PARTITION
@@ -236,7 +244,7 @@ REORGANIZE PARTITION
 INTO(
   PARTITION p_others DEFAULT PARTITIONS 4);
 ```
-After REORGANIZE PARTITION operation, 
+After REORGANIZE PARTITION operation, table cust_orders has 4 default partitions: p_others0,p_others1,p_others2,p_others3 
 ```
 mysql> explain select * from cust_orders;
 +----+-------------+-------------+-----------------------------------------------------+------+---------------+------+---------+------+------+----------+-------+
@@ -246,7 +254,7 @@ mysql> explain select * from cust_orders;
 +----+-------------+-------------+-----------------------------------------------------+------+---------------+------+---------+------+------+----------+-------+
 1 row in set, 1 warning (0.01 sec)
 ```
-table cust_orders has 4 default partitions: p_others0,p_others1,p_others2,p_others3 
+
 
 
 
